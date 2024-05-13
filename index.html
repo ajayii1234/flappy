@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flappy Bird Clone</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #70c5ce;
+    }
+
+    #game {
+      position: relative;
+      width: 400px;
+      height: 600px;
+      border: 2px solid #333;
+      background-color: #fff;
+    }
+
+    #bird {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      background-color: #f00;
+      border-radius: 50%;
+      top: 50%;
+      left: 100px;
+      transform: translateY(-50%);
+    }
+
+    .pipe {
+      position: absolute;
+      width: 60px;
+      height: 300px;
+      background-color: #333;
+    }
+
+    .top-pipe {
+      top: 0;
+    }
+
+    .bottom-pipe {
+      bottom: 0;
+    }
+  </style>
+</head>
+<body>
+  <div id="game">
+    <div id="bird"></div>
+  </div>
+  <script>
+    const bird = document.getElementById("bird");
+    const game = document.getElementById("game");
+
+    let birdTop = 220;
+    let gravity = 2;
+    let gameTimer = null;
+    let isGameOver = false;
+
+    function startGame() {
+      gameTimer = setInterval(() => {
+        birdTop += gravity;
+        bird.style.top = birdTop + "px";
+        checkGameOver();
+      }, 20);
+    }
+
+    function jump() {
+      if (!isGameOver) {
+        birdTop -= 50;
+        bird.style.top = birdTop + "px";
+      }
+    }
+
+    function checkGameOver() {
+      let birdBottom = birdTop + bird.offsetHeight;
+      let gameHeight = game.offsetHeight;
+
+      if (birdBottom >= gameHeight || birdTop <= 0) {
+        clearInterval(gameTimer);
+        isGameOver = true;
+        alert("Game Over! Try again.");
+      }
+    }
+
+    document.addEventListener("keydown", (event) => {
+      if (event.code === "Space") {
+        jump();
+      }
+    });
+
+    startGame();
+  </script>
+</body>
+</html>
