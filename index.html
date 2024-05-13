@@ -37,16 +37,17 @@
     .pipe {
       position: absolute;
       width: 60px;
-      height: 300px;
       background-color: #333;
     }
 
     .top-pipe {
       top: 0;
+      height: 250px;
     }
 
     .bottom-pipe {
       bottom: 0;
+      height: 350px;
     }
   </style>
 </head>
@@ -69,6 +70,8 @@
         bird.style.top = birdTop + "px";
         checkGameOver();
       }, 20);
+
+      createPipe();
     }
 
     function jump() {
@@ -85,6 +88,66 @@
       if (birdBottom >= gameHeight || birdTop <= 0) {
         clearInterval(gameTimer);
         isGameOver = true;
+        alert("Game Over! Try again.");
+      }
+    }
+
+    function createPipe() {
+      if (!isGameOver) {
+        const pipeGap = 200;
+        const pipeWidth = 60;
+        const pipeX = game.offsetWidth;
+        const pipeHeight = Math.floor(Math.random() * 300) + 50;
+
+        const topPipe = document.createElement("div");
+        topPipe.classList.add("pipe", "top-pipe");
+        topPipe.style.height = pipeHeight + "px";
+        topPipe.style.left = pipeX + "px";
+        game.appendChild(topPipe);
+
+        const bottomPipe = document.createElement("div");
+        bottomPipe.classList.add("pipe", "bottom-pipe");
+        bottomPipe.style.height = gameHeight - pipeHeight - pipeGap + "px";
+        bottomPipe.style.left = pipeX + "px";
+        game.appendChild(bottomPipe);
+
+        movePipe(topPipe, bottomPipe, pipeX);
+      }
+    }
+
+    function movePipe(topPipe, bottomPipe, pipeX) {
+      let moveTimer = setInterval(() => {
+        if (!isGameOver) {
+          pipeX -= 5;
+          topPipe.style.left = pipeX + "px";
+          bottomPipe.style.left = pipeX + "px";
+
+          if (pipeX < -60) {
+            topPipe.remove();
+            bottomPipe.remove();
+            clearInterval(moveTimer);
+            createPipe();
+          }
+
+          checkCollision(topPipe, bottomPipe);
+        } else {
+          clearInterval(moveTimer);
+        }
+      }, 20);
+    }
+
+    function checkCollision(topPipe, bottomPipe) {
+      let birdRect = bird.getBoundingClientRect();
+      let topPipeRect = topPipe.getBoundingClientRect();
+      let bottomPipeRect = bottomPipe.getBoundingClientRect();
+
+      if (
+        birdRect.right > topPipeRect.left &&
+        birdRect.left < topPipeRect.right &&
+        (birdRect.top < topPipeRect.bottom || birdRect.bottom > bottomPipeRect.top)
+      ) {
+        isGameOver = true;
+        clearInterval(gameTimer);
         alert("Game Over! Try again.");
       }
     }
